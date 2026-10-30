@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Inventory System{% endblock %}{% if current_user.is_authenticated %} · {{ current_user.shop_name or 'My Shop' }}{% endif %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="app-body">
+<section class="section">
+  <div class="container app-shell">
+    {% block navigation %}
+    <nav class="navbar app-navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item brand-item" href="{{ url_for('main.dashboard') }}">
+          <span class="brand-mark">IM</span>
+          <span class="brand-name">{{ current_user.shop_name if current_user.is_authenticated and current_user.shop_name else 'Inventory' }}</span>
+        </a>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="app-nav">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div id="app-nav" class="navbar-menu">
+        <div class="navbar-start">
+          <a class="navbar-item nav-link {% if request.endpoint == 'main.dashboard' %}is-active{% endif %}" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+          <a class="navbar-item nav-link {% if request.endpoint and request.endpoint.startswith('products.') %}is-active{% endif %}" href="{{ url_for('products.list_products') }}">Products</a>
+          <a class="navbar-item nav-link {% if request.endpoint and request.endpoint.startswith('sales.') %}is-active{% endif %}" href="{{ url_for('sales.list_sales') }}">Sales</a>
+          <a class="navbar-item nav-link {% if request.endpoint and request.endpoint.startswith('reports.') %}is-active{% endif %}" href="{{ url_for('reports.daily_report') }}">Reports</a>
+        </div>
+        <div class="navbar-end">
+          {% if current_user.is_authenticated %}
+            <div class="navbar-item">
+              <div class="user-chip">
+                <span class="avatar">{{ current_user.username[:1]|upper }}</span>
+                <span>
+                  <strong>{{ current_user.username }}</strong>
+                  <small>{{ current_user.shop_name or 'My Shop' }}</small>
+                </span>
+              </div>
+            </div>
+            <div class="navbar-item">
+              <a class="button is-small is-light {% if request.endpoint == 'auth.settings' %}is-active{% endif %}" href="{{ url_for('auth.settings') }}">Shop settings</a>
+            </div>
+            <div class="navbar-item">
+              <a class="button is-small is-light" href="{{ url_for('auth.logout') }}">Logout</a>
+            </div>
+          {% else %}
+            <div class="navbar-item">
+              <a class="button is-small is-primary" href="{{ url_for('auth.login') }}">Login</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+    {% endblock %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="notification is-{{ 'info' if category == 'info' else category }}">
+            <button class="delete" aria-label="dismiss"></button>
+            {{ msg }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <main class="app-main">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="app-footer">
+      <span>&copy; <span id="app-year"></span> {{ current_user.shop_name if current_user.is_authenticated and current_user.shop_name else 'Inventory Management System' }}</span>
+      <span>Stock, sales and reports in one place.</span>
+    </footer>
+  </div>
+</section>
+<script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/sales.js') }}" defer></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

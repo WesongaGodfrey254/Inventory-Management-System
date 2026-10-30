@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Products</h1>
+      <p class="page-subtitle">Manage the items in your shop inventory.</p>
+    </div>
+    <a class="button is-primary" href="{{ url_for('products.create_product') }}">+ New product</a>
+  </div>
+
+  {% if products %}
+    <div class="table-card">
+      <div class="table-toolbar">
+        <input class="input" type="search" placeholder="Search products..." data-table-filter="#products-table" aria-label="Search products">
+        <span class="table-toolbar-note">{{ products|length }} product{{ '' if products|length == 1 else 's' }}</span>
+      </div>
+      <div class="table-container">
+        <table id="products-table" class="table is-fullwidth is-hoverable">
+          <thead>
+            <tr><th>SKU</th><th>Name</th><th>Price</th><th>Quantity</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for p in products %}
+              <tr>
+                <td class="muted">{{ p.sku or '—' }}</td>
+                <td><span class="product-name">{{ p.name }}</span></td>
+                <td><span class="money">{{ p.price }}</span></td>
+                <td>
+                  <span class="tag stock-tag {% if p.quantity_in_stock and p.quantity_in_stock > 5 %}is-success{% elif p.quantity_in_stock and p.quantity_in_stock > 0 %}is-warning{% else %}is-danger{% endif %} is-light">
+                    {{ p.quantity_in_stock or 0 }}
+                  </span>
+                </td>
+                <td class="has-text-right">
+                  <a class="button is-small is-light" href="{{ url_for('products.edit_product', product_id=p.id) }}">Edit</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="surface empty-state">
+      <div class="empty-state-icon">📦</div>
+      <strong>No products yet</strong>
+      <p>Add your first product so you can start recording sales.</p>
+      <a class="button is-primary is-small mt-3" href="{{ url_for('products.create_product') }}">Add a product</a>
+    </div>
+  {% endif %}
+{% endblock %}

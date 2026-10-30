@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block navigation %}{% endblock %}
+{% block content %}
+  <div class="auth-shell">
+    <div class="auth-card fade-in">
+      <div class="auth-brand">
+        <span class="brand-mark">IM</span>
+        <div>
+          <strong>Inventory Management</strong>
+          <span>Sales &amp; stock control</span>
+        </div>
+      </div>
+
+      <h1 class="title is-4">Welcome back</h1>
+      <p class="page-subtitle">Login to manage your shop.</p>
+
+      <form method="post" data-loading>
+        {{ form.hidden_tag() }}
+        <div class="field">
+          <label class="label">Username</label>
+          <div class="control">{{ form.username(class="input", placeholder="Enter your username") }}</div>
+          {% for error in form.username.errors %}<p class="help is-danger">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control">{{ form.password(class="input", placeholder="Enter your password") }}</div>
+          {% for error in form.password.errors %}<p class="help is-danger">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="field">
+          <div class="control">{{ form.submit(class="button is-primary is-fullwidth") }}</div>
+        </div>
+      </form>
+
+      <p class="auth-footer-link">Don't have an account? <a href="{{ url_for('auth.register') }}">Create a shop account</a></p>
+    </div>
+  </div>
+{% endblock %}

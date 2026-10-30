@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Shop settings{% endblock %}
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Shop settings</h1>
+      <p class="page-subtitle">The shop name is used on every customer receipt and email notification.</p>
+    </div>
+  </div>
+
+  <div class="form-card fade-in" style="max-width: 640px;">
+    <form method="post">
+      {{ form.hidden_tag() }}
+      <div class="field">
+        <label class="label">Shop name</label>
+        <div class="control">{{ form.shop_name(class="input", placeholder="e.g. Buda Shop") }}</div>
+        {% for error in form.shop_name.errors %}<p class="help is-danger">{{ error }}</p>{% endfor %}
+        <p class="help">Customers see this name in the email subject, sender and receipt body.</p>
+      </div>
+      <div class="form-actions">
+        {{ form.submit(class="button is-primary") }}
+        <a class="button is-light" href="{{ url_for('main.dashboard') }}">Cancel</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Sales{% endblock %}
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Sales</h1>
+      <p class="page-subtitle">Your latest 50 sales and the products sold.</p>
+    </div>
+    <a class="button is-primary" href="{{ url_for('sales.create_sale_form') }}">+ New sale</a>
+  </div>
+
+  {% if sales %}
+    <div class="table-card">
+      <div class="table-toolbar">
+        <input class="input" type="search" placeholder="Search sales..." data-table-filter="#sales-table" aria-label="Search sales">
+        <span class="table-toolbar-note">{{ sales|length }} sale{{ '' if sales|length == 1 else 's' }}</span>
+      </div>
+      <div class="table-container">
+        <table id="sales-table" class="table is-fullwidth is-hoverable">
+          <thead>
+            <tr><th>Receipt</th><th>Date</th><th>Customer</th><th>Products sold</th><th>Total</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for s in sales %}
+              <tr>
+                <td><span class="has-text-weight-semibold">{{ s.receipt_number }}</span></td>
+                <td class="muted">{{ s.created_at }}</td>
+                <td>{{ s.customer.name if s.customer else '—' }}</td>
+                <td>
+                  {% for item in s.items %}
+                    <span class="tag is-light mb-1">
+                      {{ item.product.name if item.product else 'Deleted product' }}{% if item.quantity != 1 %} × {{ item.quantity }}{% endif %}
+                    </span>
+                  {% else %}
+                    <span class="muted">—</span>
+                  {% endfor %}
+                </td>
+                <td><span class="money">{{ s.total_amount }}</span></td>
+                <td class="has-text-right">
+                  {% if s.customer and s.customer.email %}
+                    <form method="post" action="{{ url_for('sales.resend_receipt', sale_id=s.id) }}">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button class="button is-small is-light" type="submit" title="Resend to {{ s.customer.email }}">
+                        Resend receipt
+                      </button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="surface empty-state">
+      <div class="empty-state-icon">🛒</div>
+      <strong>No sales yet</strong>
+      <p>Record a sale and it will appear here with the products sold.</p>
+      <a class="button is-primary is-small mt-3" href="{{ url_for('sales.create_sale_form') }}">Record a sale</a>
+    </div>
+  {% endif %}
+{% endblock %}

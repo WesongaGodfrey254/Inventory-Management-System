@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if product else 'New' }} Product{% endblock %}
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ 'Edit' if product else 'New' }} product</h1>
+      <p class="page-subtitle">Keep the product details and stock level up to date.</p>
+    </div>
+  </div>
+
+  <form method="post" class="form-card fade-in" data-loading>
+    {{ form.hidden_tag() }}
+
+    <div class="columns is-multiline">
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">SKU</label>
+          <div class="control">{{ form.sku(class="input", placeholder="e.g. 101") }}</div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Name</label>
+          <div class="control">{{ form.name(class="input", placeholder="Product name") }}</div>
+        </div>
+      </div>
+
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Price</label>
+          <div class="control">{{ form.price(class="input", step="0.01", min="0", placeholder="0.00") }}</div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Cost</label>
+          <div class="control">{{ form.cost(class="input", step="0.01", min="0", placeholder="0.00") }}</div>
+        </div>
+      </div>
+
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Quantity in stock</label>
+          <div class="control">{{ form.quantity_in_stock(class="input", min="0", placeholder="0") }}</div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Category</label>
+          <div class="control">{{ form.category_id(class="select") }}</div>
+        </div>
+      </div>
+
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Supplier</label>
+          <div class="control">{{ form.supplier_id(class="select") }}</div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Description</label>
+          <div class="control">{{ form.description(class="textarea", rows="3", placeholder="Optional description") }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      {{ form.submit(class="button is-primary") }}
+      <a class="button is-light" href="{{ url_for('products.list_products') }}">Cancel</a>
+    </div>
+  </form>
+{% endblock %}

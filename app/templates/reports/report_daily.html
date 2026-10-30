@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Daily Report{% endblock %}
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Daily report</h1>
+      <p class="page-subtitle">{{ date }}</p>
+    </div>
+    <a class="button is-light" href="{{ url_for('main.dashboard') }}">Back to dashboard</a>
+  </div>
+
+  <div class="columns">
+    <div class="column is-5">
+      <div class="stat-card stat-card--green fade-in">
+        <div class="stat-card-top">
+          <span class="stat-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+              <circle cx="12" cy="12" r="2.5"></circle>
+            </svg>
+          </span>
+          <span class="stat-label">Total sales today</span>
+        </div>
+        <p class="stat-value">{{ total }}</p>
+        <p class="stat-note">{{ sales|length }} sale{{ '' if sales|length == 1 else 's' }} recorded</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-header" style="margin-top: 1rem;">
+    <h2 class="subtitle section-heading">Sales on {{ date }}</h2>
+  </div>
+
+  {% if sales %}
+    <div class="table-card">
+      <div class="table-container">
+        <table class="table is-fullwidth is-hoverable">
+          <thead>
+            <tr><th>Receipt</th><th>Date</th><th>Customer</th><th>Products sold</th><th>Total</th></tr>
+          </thead>
+          <tbody>
+            {% for s in sales %}
+              <tr>
+                <td><span class="has-text-weight-semibold">{{ s.receipt_number }}</span></td>
+                <td class="muted">{{ s.created_at }}</td>
+                <td>{{ s.customer.name if s.customer else '—' }}</td>
+                <td>
+                  {% for item in s.items %}
+                    <span class="tag is-light mb-1">
+                      {{ item.product.name if item.product else 'Deleted product' }}{% if item.quantity != 1 %} × {{ item.quantity }}{% endif %}
+                    </span>
+                  {% else %}
+                    <span class="muted">—</span>
+                  {% endfor %}
+                </td>
+                <td><span class="money">{{ s.total_amount }}</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="surface empty-state">
+      <div class="empty-state-icon">📊</div>
+      <strong>No sales today</strong>
+      <p>Sales recorded today will appear here.</p>
+    </div>
+  {% endif %}
+{% endblock %}

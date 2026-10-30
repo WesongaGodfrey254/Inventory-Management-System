@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Create Sale{% endblock %}
+{% block content %}
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Create sale</h1>
+      <p class="page-subtitle">Select quantities below — the total updates as you type.</p>
+    </div>
+    <a class="button is-light" href="{{ url_for('sales.list_sales') }}">Back to sales</a>
+  </div>
+
+  <form method="post" class="form-card fade-in" data-loading data-sale-form>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <h2 class="subtitle section-heading">Customer details <span class="tag is-light is-small">optional</span></h2>
+    <p class="page-subtitle mb-4">Add an email address to send the buyer a receipt automatically.</p>
+
+    <div class="columns is-multiline">
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Customer name</label>
+          <div class="control"><input class="input" name="customer_name" placeholder="e.g. Jane Buyer"></div>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Customer email</label>
+          <div class="control"><input class="input" type="email" name="customer_email" placeholder="buyer@example.com"></div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="subtitle section-heading mt-5">Items</h2>
+
+    {% if products %}
+      <div class="table-card">
+        <div class="table-container">
+          <table class="table is-fullwidth">
+            <thead>
+              <tr><th>Product</th><th>Price</th><th>Available</th><th>Quantity</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody>
+              {% for p in products %}
+                <tr>
+                  <td><span class="product-name">{{ p.name }}</span></td>
+                  <td><span class="money">{{ p.price }}</span></td>
+                  <td><span class="tag is-light">{{ p.quantity_in_stock or 0 }}</span></td>
+                  <td>
+                    <input
+                      class="input qty-input"
+                      name="qty_{{ p.id }}"
+                      type="number"
+                      min="0"
+                      max="{{ p.quantity_in_stock or 0 }}"
+                      value="0"
+                      step="1"
+                      data-price="{{ p.price }}"
+                      data-product-id="{{ p.id }}"
+                      aria-label="Quantity for {{ p.name }}"
+                      style="max-width: 110px;"
+                    >
+                  </td>
+                  <td><span class="money" id="line-total-{{ p.id }}">0.00</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="4" class="has-text-right">Sale total</th>
+                <th><span class="money" id="sale-total">0.00</span></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="button is-primary" type="submit">Record sale</button>
+        <a class="button is-light" href="{{ url_for('sales.list_sales') }}">Cancel</a>
+      </div>
+    {% else %}
+      <div class="surface empty-state">
+        <div class="empty-state-icon">📦</div>
+        <strong>No products available</strong>
+        <p>Add a product with stock before recording a sale.</p>
+        <a class="button is-primary is-small mt-3" href="{{ url_for('products.create_product') }}">Add a product</a>
+      </div>
+    {% endif %}
+  </form>
+{% endblock %}
