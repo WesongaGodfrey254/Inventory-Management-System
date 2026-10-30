@@ -67,3 +67,7 @@ pip-wheel-metadata/
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Vercel/Neon agent tooling installed by the CLI
+.agents/
+skills-lock.json
