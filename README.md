@@ -105,6 +105,31 @@ Inventory & Sales Management (Flask)
    A "receipt emailed" log line means Gmail accepted the message; delivery
    after that point is handled by the recipient's mail provider.
 
+8. Deployed on Vercel
+   Production URL: https://inventory-management-system-wesongagodfrey254.vercel.app
+
+   Repository: https://github.com/WesongaGodfrey254/Inventory-Management-System
+
+   The project is linked to GitHub: every push to `main` triggers a new
+   production deployment. Vercel's zero-config Flask runtime uses `wsgi.py`.
+   Preview deployments stay behind Vercel Authentication; only the production
+   domain is public.
+
+   Production environment variables (set in the Vercel dashboard, never
+   committed):
+   - DATABASE_URL: Neon PostgreSQL (provisioned through the Vercel marketplace)
+   - SECRET_KEY, ADMIN_PASSWORD, MAIL_PASSWORD: stored as Vercel *Secrets*
+   - ADMIN_USERNAME, ADMIN_SHOP_NAME, MAIL_* and LOG_TO_FILE: stored as Config
+   - LOG_TO_FILE=0 because the serverless filesystem is read-only
+
+   After changing the schema or the admin credentials, run the bootstrap once
+   against the unpooled database URL:
+
+     DATABASE_URL=... ADMIN_USERNAME=admin ADMIN_PASSWORD=... \
+       ADMIN_SHOP_NAME="My Shop" flask --app wsgi init-db
+
+   The command is idempotent and refreshes the admin password.
+
 Notes:
 - The dashboard shows all-time sales count, all-time sales value and product count.
   These totals refresh automatically every 3 seconds and are scoped to the logged-in shop.
@@ -112,4 +137,6 @@ Notes:
   dashboard totals and reports are only visible to that account.
 - Production uses PostgreSQL through psycopg 3. Keep the database URL in the
   host's environment variables, never in source control.
+- Security: global CSRF protection, secure/HttpOnly/SameSite session cookies,
+  HSTS, CSP and other hardened headers, plus `/healthz` for uptime checks.
 - Add role-based checks, tests and more reports as next steps.
